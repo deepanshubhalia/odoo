@@ -78,3 +78,6 @@ async function main() {
 }
 
 await main();
+
+//run it with node index.js
+//make sure to set GOOGLE_API_KEY in .env file
