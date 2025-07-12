@@ -5,6 +5,8 @@ This repository contains our Odoo development project.
 
 ## Team Information
 
+**Team Name:** Ctrl+Alt+Caffeine
+
 ### Team Leader
 **Deepanshu Bhalia**
 - Email: deepanshubhalia1234@gmail.com
