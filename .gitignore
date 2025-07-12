@@ -157,3 +157,5 @@ odoo.conf
 # OS specific
 .DS_Store
 Thumbs.db
+
+AI/node_modules/
