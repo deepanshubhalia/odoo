@@ -8,7 +8,8 @@ const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 async function main() {
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",
-    contents: "croptop for girls age 15, yellow, cotton",
+    // the product description goes in here
+    contents: "Ye kurta handloom cotton ka hai, soft touch with fine embroidery on the neckline. M size hai—summer me lightweight aur stylish dono lagega.",
     config: {
       systemInstruction: `You are a cloth categorization AI, you do not answer to any other questions, 
       Focus on clothing categorization only. You will receiver a text input of a person describing the 
@@ -41,13 +42,33 @@ async function main() {
         2. Female
         3. Unisex
 
+        size category:
+        1. Small
+        2. Medium
+        3. Large
+        4. Extra Large
+        5. 8 or 9 or 10 or 11 or 12 (for footwear)
+
+        material category:
+        1. Cotton
+        2. Wool
+        3. Polyester
+        4. Silk
+        5. Denim
+        6. Leather
+        8. Synthetic
+
+
+
 
         you will return a JSON object with the following structure:
         {
             "category": "Tops",
             "style": "Casual",
             "fit": "Regular",
-            "gender": "Unisex"
+            "gender": "Unisex",
+            "size": "Medium",
+            "material": "Cotton"
         }
 
        example: 
@@ -56,21 +77,30 @@ async function main() {
             "category": "Tops",
             "style": "Formal",
             "fit": "Regular",
-            "gender": "Male"}
+            "gender": "Male",
+            "size": "Medium",
+            "material": "Cotton"
+            }
        
         user: red scarf ladies , woolen
         your reply: {
             "category": "Accessories",
             "style": "Seasonal",
             "fit": "Regular",
-            "gender": "Female"}
+            "gender": "Female",
+            "size": "Medium",
+            "material": "Wool"
+            }
        
         user: pair of nike sneakers, black and white, size 9
         your reply: {
             "category": "Footwear",
             "style": "Casual",
             "fit": "Regular",
-            "gender": "Unisex"}
+            "gender": "Unisex"
+            "size": "9",
+            "material": "Synthetic"
+            }
             `,
     },
   });
