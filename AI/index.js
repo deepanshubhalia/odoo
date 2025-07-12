@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
+const ai = new GoogleGenAI({ apiKey: "AIzaSyDIBLMyQgVMTy2-k5ZPqlC4PGUnxMS8ePk" }); //this api key is of free tier and is fine for testing
 
 async function main() {
   const response = await ai.models.generateContent({
@@ -110,4 +110,3 @@ async function main() {
 await main();
 
 //run it with node index.js
-//make sure to set GOOGLE_API_KEY in .env file
