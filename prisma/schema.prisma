@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+enum Category {
+    TOPS
+    BOTTOMS
+    DRESSES
+    OUTERWEAR
+    ACCESSORIES
+    SHOES
+}
+
+enum Size {
+    XS
+    S
+    M
+    L
+    XL
+    XXL
+}
+
+enum Condition {
+    NEW
+    EXCELLENT
+    GOOD
+    FAIR
+}
+
+enum ItemStatus {
+    AVAILABLE
+    PENDING
+    SWAPPED
+    REDEEMED
+}
+
+enum SwapType {
+    DIRECT_SWAP
+    POINTS_REDEMPTION
+}
+
+enum SwapStatus {
+    PENDING
+    ACCEPTED
+    REJECTED
+    COMPLETED
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String    @unique
+    password      String?
+    emailVerified DateTime?
+    image         String?
+    role          Role      @default(USER)
+    pointsBalance Int       @default(0) @map("points_balance")
+    createdAt     DateTime  @default(now()) @map("created_at")
+    updatedAt     DateTime  @updatedAt @map("updated_at")
+
+    accounts       Account[]
+    sessions       Session[]
+    items          Item[]
+    requestedSwaps Swap[]    @relation("SwapRequester")
+    receivedSwaps  Swap[]    @relation("SwapOwner")
+
+    @@map("users")
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model Item {
+    id               String     @id @default(cuid())
+    userId           String     @map("user_id")
+    title            String
+    description      String     @db.Text
+    category         Category
+    size             Size
+    condition        Condition
+    brand            String?
+    color            String?
+    material         String?
+    careInstructions String?    @map("care_instructions") @db.Text
+    lookingFor       String?    @map("looking_for") @db.Text
+    tags             String[]
+    images           String[]
+    status           ItemStatus @default(AVAILABLE)
+    pointsValue      Int        @default(10) @map("points_value")
+    isApproved       Boolean    @default(false) @map("is_approved")
+    createdAt        DateTime   @default(now()) @map("created_at")
+    updatedAt        DateTime   @updatedAt @map("updated_at")
+
+    owner          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    requesterSwaps Swap[] @relation("SwapRequesterItem")
+    ownerSwaps     Swap[] @relation("SwapOwnerItem")
+
+    @@map("items")
+}
+
+model Swap {
+    id              String     @id @default(cuid())
+    requesterId     String     @map("requester_id")
+    ownerId         String     @map("owner_id")
+    requesterItemId String?    @map("requester_item_id")
+    ownerItemId     String     @map("owner_item_id")
+    swapType        SwapType   @map("swap_type")
+    status          SwapStatus @default(PENDING)
+    pointsUsed      Int?       @map("points_used")
+    createdAt       DateTime   @default(now()) @map("created_at")
+    updatedAt       DateTime   @updatedAt @map("updated_at")
+
+    requester     User  @relation("SwapRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+    owner         User  @relation("SwapOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+    requesterItem Item? @relation("SwapRequesterItem", fields: [requesterItemId], references: [id])
+    ownerItem     Item  @relation("SwapOwnerItem", fields: [ownerItemId], references: [id])
+
+    @@map("swaps")
+}
